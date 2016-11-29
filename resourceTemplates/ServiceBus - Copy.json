@@ -1,0 +1,56 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serviceBus": {
+            "type": "object",
+			"metadata": {
+				"description": "Azure meaage service bus"
+			}
+        },
+        "AuthorizationRules": {
+            "type": "String",
+			"metadata": {
+				"description": "i actually don't know what this is for, but it was in the exported template"
+			}
+        }
+    },
+	
+    "variables": {},
+	
+    "resources": [
+        {
+            "comments": "create a messaging service bus",
+			"type": "Microsoft.ServiceBus/namespaces",
+			"name": "[parameters('ctiServiceBus').Name]",
+			"location": "[parameters('ctiServiceBus').Location]",
+			"apiVersion": "2015-08-01",
+			"kind": "[parameters('ctiServiceBus').kind]",
+            "sku": {
+                "name": "[parameters('ctiServiceBus').skuName]",
+                "tier": "[parameters('ctiServiceBus').skuTier]"
+            },
+            "tags": {},
+            "properties": {
+                "serviceBusEndpoint": "[concat('https://', parameters('ctiServiceBus').Name,'.servicebus.windows.net:443/')]"
+            }
+        },
+        {
+            "comments": "",
+			"type": "Microsoft.ServiceBus/namespaces/AuthorizationRules",
+            "name": "[parameters('ctiServiceBus').Name)]",
+            "apiVersion": "2015-08-01",
+            "properties": {
+                "rights": [
+                    "Listen",
+                    "Manage",
+                    "Send"
+                ]
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.ServiceBus/namespaces', parameters('ctiServiceBus').Name)]"
+            ]
+        }
+    ]
+}

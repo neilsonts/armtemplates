@@ -1,0 +1,69 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"subscriptionID": {
+			"type": "string"
+		},
+		"ResourceGroupName": {
+		  "type": "string",
+		  "defaultValue": "UK South"
+		},
+		"ResourceGroupLocation": {
+		  "type": "string",
+		  "defaultValue": "UK South"
+		},
+		"artifactsLocation": {
+		  "type": "string"
+		},
+		"asfClusterName": {
+		  "type": "string"
+		},
+		"vnetName": {
+		  "type": "string"
+		},
+		"Network": {
+			"type": "string"
+		},
+		"certificateUrlValue": {
+			"type": "string"
+		},
+		"sourceVaultValue": {
+			"type": "string"
+		}
+	},
+    
+	"variables": {
+		"Cluster01": {
+		  "subscriptionID": "[parameters('subscriptionID')]",
+		  "ResourceGroupName": "[parameters('ResourceGroupName')]",
+		  "clusterLocation": "[parameters('ResourceGroupLocation')]",
+		  "ClusterName": "[parameters('asfClusterName')]",
+		  "VnetName": "[parameters('vnetName')]",
+		  "Network": "[parameters('Network')]",
+		  "certificateUrlValue": "[parameters('certificateUrlValue')]",
+		  "sourceVaultValue": "[parameters('sourceVaultValue')]"
+		}
+	},
+    
+	"resources": [
+		{
+		  "name": "ServiceFabricCluster",
+		  "type": "Microsoft.Resources/deployments",
+		  "apiVersion": "2015-01-01",
+		  "dependsOn": [ ],
+		  "properties": {
+			"mode": "Incremental",
+			"templateLink": {
+			  "uri": "[concat(parameters('artifactsLocation'), '/resourceTemplates/ServiceFabric.json')]",
+			  "contentVersion": "1.0.0.0"
+			},
+			"parameters": {
+			  "ASFCluster": {
+				"value": "[variables('Cluster01')]"
+			  }
+			}
+		  }
+		}
+    ]
+}

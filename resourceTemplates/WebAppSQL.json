@@ -1,0 +1,131 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"WebAppSQL": {
+		  "type": "object",
+		  "metadata": {
+			"description": "Web App with SQL"
+		  }
+		}
+	},
+    
+	"variables": {},
+    
+	"resources": [
+        {
+            "comments": "Create Azure SQL server",
+            "type": "Microsoft.Sql/servers",
+            "kind": "v12.0",
+            "name": "[parameters('WebAppSQL').SqlServerName]",
+            "apiVersion": "2014-04-01",
+            "location": "[parameters('WebAppSQL').Location]",
+            "properties": {
+                "administratorLogin": "[parameters('WebAppSQL').SqlAdminUser]",
+                "administratorLoginPassword": "[parameters('WebAppSQL').SqlAdminPswd]",
+                "version": "12.0"
+            },
+            "dependsOn": [],
+			"resources": [
+				{
+				  "apiVersion": "2014-04-01-preview",
+				   "type": "firewallrules",
+				  "dependsOn": [
+					"[concat('Microsoft.Sql/servers/', parameters('WebAppSQL').SqlServerName)]"
+				  ],
+				  "location": "[parameters('WebAppSQL').Location]",
+				  "name": "AllowAllWindowsAzureIps",
+				  "properties": {
+					"endIpAddress": "0.0.0.0",
+					"startIpAddress": "0.0.0.0"
+				  }
+				},
+				{
+					"comments": "Create Azure SQL database",
+					"type": "databases",
+					"kind": "v12.0,user",
+					"name": "[parameters('WebAppSQL').DbName]",
+					"apiVersion": "2015-01-01",
+					"location": "[parameters('WebAppSQL').Location]",
+					"properties": {
+						"edition": "Standard",
+						"status": "Online",
+						"serviceLevelObjective": "[parameters('WebAppSQL').DbServiceLevelObjective]",
+						"collation": "SQL_Latin1_General_CP1_CI_AS",
+						"maxSizeBytes": "268435456000",
+						"requestedServiceObjectiveName": null,
+						"defaultSecondaryLocation": "North Europe"
+					},
+					"dependsOn": [
+						"[resourceId('Microsoft.Sql/servers', parameters('WebAppSQL').SqlServerName)]"
+					]
+				}
+			]
+				
+        },
+		{
+			"comments": "Create App Service Plan",
+			"apiVersion": "2015-04-01",
+			"name": "[parameters('WebAppSQL').HostingPlanName]",
+			"type": "Microsoft.Web/serverfarms",
+			"location": "[parameters('WebAppSQL').Location]",
+			"properties": {
+				"name": "[parameters('WebAppSQL').HostingPlanName]",
+				"sku": "[parameters('WebAppSQL').SKU]",
+				"workerSize": "[parameters('WebAppSQL').WorkerSize]",
+				"numberOfWorkers": "[parameters('WebAppSQL').NumberOfWorkers]"
+			}
+		},
+		{
+			"comments": "[parameters('WebAppSQL').Comments]",
+			"apiVersion": "2016-03-01",
+			"name": "[parameters('WebAppSQL').WebsiteName]",
+			"type": "Microsoft.Web/sites",
+			"location": "[parameters('WebAppSQL').Location]",
+			"dependsOn": [
+				"[concat('Microsoft.Web/serverfarms/', parameters('WebAppSQL').HostingPlanName)]"
+			],
+			"tags": {
+			"[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('WebAppSQL').HostingPlanName)]": "empty"
+			},
+			"properties": {
+				"name": "[parameters('WebAppSQL').WebsiteName]",
+				"serverFarmId": "[parameters('WebAppSQL').HostingPlanName]",
+				"siteConfig": {
+				  "AlwaysOn": true
+				}
+			},
+			"resources": [
+				{
+				  "apiVersion": "2016-03-01",
+				  "type": "config",
+				  "name": "connectionstrings",
+				  "dependsOn": [
+					"[concat('Microsoft.Web/sites/', parameters('WebAppSQL').WebsiteName)]"
+				  ],
+				  "properties": {
+					"ASQLConn": {
+					  "value": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', parameters('WebAppSQL').SqlServerName)).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('WebAppSQL').DbName, ';User Id=', parameters('WebAppSQL').SqlAdminUser, '@', parameters('WebAppSQL').SqlServerName, ';Password=', parameters('WebAppSQL').SqlAdminPswd, ';')]",
+					  "type": "SQLAzure"
+					}
+				  }
+				}
+			]
+		},
+        {
+            "comments": "Create application insights instance",
+            "type": "microsoft.insights/components",
+            "kind": "web",
+            "name": "[parameters('WebAppSQL').AppInsightsName]",
+            "apiVersion": "2015-05-01",
+            "location": "Central US",
+            "tags": {
+				"[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/sites/', parameters('WebAppSQL').WebsiteName)]": "Resource"			
+            },
+            "properties": {
+                "ApplicationId": "[parameters('WebAppSQL').AppInsightsName]"
+            },
+            "dependsOn": []
+        }
+    ]
+}

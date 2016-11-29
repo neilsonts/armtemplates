@@ -1,0 +1,114 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"subscriptionID": {
+			"type": "string"
+		},
+		"ResourceGroupName": {
+		  "type": "string",
+		  "defaultValue": "UK South"
+		},
+		"ResourceGroupLocation": {
+		  "type": "string",
+		  "defaultValue": "UK South"
+		},
+		"artifactsLocation": {
+		  "type": "string"
+		},
+		"CallRecordingStorageAccount": {
+		  "type": "string"
+		},
+		"telephonyMediaStorageAccount": {
+		  "type": "string"
+		},
+		"serviceBus": {
+		  "type": "string"
+		}
+	},
+    
+	"variables": {
+		"CallRecordingStorageAccount": {
+		  "subscriptionID": "[parameters('subscriptionID')]",
+		  "ResourceGroupName": "[parameters('ResourceGroupName')]",
+		  "Location": "[parameters('ResourceGroupLocation')]",
+		  "Comments": "Storage account for call recordings",
+		  "Name": "[parameters('CallRecordingStorageAccount')]",
+		  "Type": "Standard_LRS"
+		},
+		"telephonyMediaStorageAccount": {
+		  "subscriptionID": "[parameters('subscriptionID')]",
+		  "ResourceGroupName": "[parameters('ResourceGroupName')]",
+		  "Location": "[parameters('ResourceGroupLocation')]",
+		  "Comments": "Storage account for audit log table storage",
+		  "Name": "[parameters('telephonyMediaStorageAccount')]",
+		  "Type": "Standard_LRS"
+		},
+		"ServiceBus": {
+		  "subscriptionID": "[parameters('subscriptionID')]",
+		  "ResourceGroupName": "[parameters('ResourceGroupName')]",
+		  "Location": "[parameters('ResourceGroupLocation')]",
+		  "Name": "[parameters('ServiceBus')]",
+		  "kind": "Messaging",
+		  "skuName": "Standard",
+		  "skuTier": "Standard"
+		}
+	},
+    
+	"resources": [
+		{
+		  "name": "CallRecordingsStorageAccount",
+		  "type": "Microsoft.Resources/deployments",
+		  "apiVersion": "2015-01-01",
+		  "dependsOn": [ ],
+		  "properties": {
+			"mode": "Incremental",
+			"templateLink": {
+			  "uri": "[concat(parameters('artifactsLocation'), '/resourceTemplates/StorageAccount.json')]",
+			  "contentVersion": "1.0.0.0"
+			},
+			"parameters": {
+			  "StorageAccount": {
+				"value": "[variables('CallRecordingStorageAccount')]"
+			  }
+			}
+		  }
+		},
+		{
+		  "name": "telephonyMediaStorageAccount",
+		  "type": "Microsoft.Resources/deployments",
+		  "apiVersion": "2015-01-01",
+		  "dependsOn": [ ],
+		  "properties": {
+			"mode": "Incremental",
+			"templateLink": {
+			  "uri": "[concat(parameters('artifactsLocation'), '/resourceTemplates/StorageAccount.json')]",
+			  "contentVersion": "1.0.0.0"
+			},
+			"parameters": {
+			  "StorageAccount": {
+				"value": "[variables('telephonyMediaStorageAccount')]"
+			  }
+			}
+		  }
+		},
+		{
+		  "name": "serviceBus",
+		  "type": "Microsoft.Resources/deployments",
+		  "apiVersion": "2015-01-01",
+		  "dependsOn": [ ],
+		  "properties": {
+			"mode": "Incremental",
+			"templateLink": {
+			  "uri": "[concat(parameters('artifactsLocation'), '/resourceTemplates/ServiceBus.json')]",
+			  "contentVersion": "1.0.0.0"
+			},
+			"parameters": {
+			  "serviceBus": {
+				"value": "[variables('serviceBus')]"
+			  }
+			}
+		  }
+		}
+    ]
+}

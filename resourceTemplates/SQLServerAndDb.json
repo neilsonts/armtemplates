@@ -1,0 +1,67 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"SQLServerAndDb": {
+		  "type": "object",
+		  "metadata": {
+			"description": "Web App with SQL"
+		  }
+		}
+	},
+    
+	"variables": {},
+    
+	"resources": [
+        {
+            "comments": "Create Azure SQL server",
+            "type": "Microsoft.Sql/servers",
+            "kind": "v12.0",
+            "name": "[parameters('SQLServerAndDb').SqlServerName]",
+            "apiVersion": "2014-04-01",
+            "location": "[parameters('SQLServerAndDb').Location]",
+            "properties": {
+                "administratorLogin": "[parameters('SQLServerAndDb').SqlAdminUser]",
+                "administratorLoginPassword": "[parameters('SQLServerAndDb').SqlAdminPswd]",
+                "version": "12.0"
+            },
+            "dependsOn": [],
+			"resources": [
+				{
+				  "apiVersion": "2014-04-01-preview",
+				   "type": "firewallrules",
+				  "dependsOn": [
+					"[concat('Microsoft.Sql/servers/', parameters('SQLServerAndDb').SqlServerName)]"
+				  ],
+				  "location": "[parameters('SQLServerAndDb').Location]",
+				  "name": "AllowAllWindowsAzureIps",
+				  "properties": {
+					"endIpAddress": "0.0.0.0",
+					"startIpAddress": "0.0.0.0"
+				  }
+				},
+				{
+					"comments": "Create Azure SQL database",
+					"type": "databases",
+					"kind": "v12.0,user",
+					"name": "[parameters('SQLServerAndDb').DbName]",
+					"apiVersion": "2015-01-01",
+					"location": "[parameters('SQLServerAndDb').Location]",
+					"properties": {
+						"edition": "Standard",
+						"status": "Online",
+						"serviceLevelObjective": "[parameters('SQLServerAndDb').DbServiceLevelObjective]",
+						"collation": "SQL_Latin1_General_CP1_CI_AS",
+						"maxSizeBytes": "268435456000",
+						"requestedServiceObjectiveName": null,
+						"defaultSecondaryLocation": "North Europe"
+					},
+					"dependsOn": [
+						"[resourceId('Microsoft.Sql/servers', parameters('SQLServerAndDb').SqlServerName)]"
+					]
+				}
+			]
+				
+        },
+    ]
+}

@@ -1,0 +1,50 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serviceBus": {
+            "type": "object",
+			"metadata": {
+				"description": "Azure meaage service bus"
+			}
+        }
+    },
+	
+    "variables": {},
+	
+    "resources": [
+        {
+            "comments": "create a messaging service bus",
+			"type": "Microsoft.ServiceBus/namespaces",
+			"name": "[parameters('serviceBus').Name]",
+			"location": "[parameters('serviceBus').Location]",
+			"apiVersion": "2015-08-01",
+			"kind": "[parameters('serviceBus').kind]",
+            "sku": {
+                "name": "[parameters('serviceBus').skuName]",
+                "tier": "[parameters('serviceBus').skuTier]"
+            },
+            "tags": {},
+            "properties": {
+                "serviceBusEndpoint": "[concat('https://', parameters('serviceBus').Name,'.servicebus.windows.net:443/')]"
+            }
+        },
+        {
+            "comments": "",
+			"type": "Microsoft.ServiceBus/namespaces/AuthorizationRules",
+            "name": "[concat(parameters('serviceBus').Name, '/RootManageSharedAccessKey')]",
+            "apiVersion": "2015-08-01",
+            "properties": {
+                "rights": [
+                    "Listen",
+                    "Manage",
+                    "Send"
+                ]
+            },
+            "resources": [],
+            "dependsOn": [
+                "[resourceId('Microsoft.ServiceBus/namespaces', parameters('serviceBus').Name)]"
+            ]
+        }
+    ]
+}

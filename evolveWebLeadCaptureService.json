@@ -1,0 +1,88 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"subscriptionID": {
+			"type": "string"
+		},
+		"ResourceGroupName": {
+		  "type": "string",
+		  "defaultValue": "UK South"
+		},
+		"ResourceGroupLocation": {
+		  "type": "string",
+		  "defaultValue": "UK South"
+		},
+		"artifactsLocation": {
+		  "type": "string"
+		},
+		"webLeadStorageAccount": {
+		  "type": "string"
+		},
+		"redisCache": {
+		  "type": "string"
+		}
+	},
+    
+	"variables": {
+		"webLeadStorageAccount": {
+		  "subscriptionID": "[parameters('subscriptionID')]",
+		  "ResourceGroupName": "[parameters('ResourceGroupName')]",
+		  "Location": "[parameters('ResourceGroupLocation')]",
+		  "Comments": "Storage account for weblead queue storage",
+		  "Name": "[parameters('webLeadStorageAccount')]",
+		  "Type": "Standard_LRS"
+		},
+		"redisCache": {
+		  "subscriptionID": "[parameters('subscriptionID')]",
+		  "ResourceGroupName": "[parameters('ResourceGroupName')]",
+		  "Location": "[parameters('ResourceGroupLocation')]",
+		  "Name": "[parameters('redisCache')]",
+		  "SKUName": "Standard",
+		  "SKUFamily": "C",
+		  "SKUCapacity": "1",
+		  "MaxClients": "1000",
+		  "MaxMemoryRes": "50",
+		  "MaxMemoryDelta": "50"
+		}
+	},
+    
+	"resources": [
+		{
+		  "name": "webLeadStorageAccount",
+		  "type": "Microsoft.Resources/deployments",
+		  "apiVersion": "2015-01-01",
+		  "dependsOn": [ ],
+		  "properties": {
+			"mode": "Incremental",
+			"templateLink": {
+			  "uri": "[concat(parameters('artifactsLocation'), '/resourceTemplates/StorageAccount.json')]",
+			  "contentVersion": "1.0.0.0"
+			},
+			"parameters": {
+			  "StorageAccount": {
+				"value": "[variables('webLeadStorageAccount')]"
+			  }
+			}
+		  }
+		},
+		{
+		  "name": "redisCache",
+		  "type": "Microsoft.Resources/deployments",
+		  "apiVersion": "2015-01-01",
+		  "dependsOn": [ ],
+		  "properties": {
+			"mode": "Incremental",
+			"templateLink": {
+			  "uri": "[concat(parameters('artifactsLocation'), '/resourceTemplates/RedisCache.json')]",
+			  "contentVersion": "1.0.0.0"
+			},
+			"parameters": {
+			  "RedisCache": {
+				"value": "[variables('redisCache')]"
+			  }
+			}
+		  }
+		}
+    ]
+}

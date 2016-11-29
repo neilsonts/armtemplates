@@ -1,0 +1,40 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"RedisCache": {
+		  "type": "object",
+		  "metadata": {
+			"description": "Redis Cache"
+		  }
+		}
+	},
+    
+	"variables": {},
+    
+	"resources": [
+        {
+            "comments": "Create instance of Azure Redis Cache (as a service)",
+            "type": "Microsoft.Cache/Redis",
+            "name": "[parameters('RedisCache').Name]",
+            "apiVersion": "2016-04-01",
+            "location": "[parameters('RedisCache').Location]",
+            "tags": {},
+            "properties": {
+                "redisVersion": "3.0",
+                "sku": {
+                    "name": "[parameters('RedisCache').SKUName]",
+                    "family": "[parameters('RedisCache').SKUFamily]",
+                    "capacity": "[parameters('RedisCache').SKUCapacity]"
+                },
+                "enableNonSslPort": false,
+                "redisConfiguration": {
+                    "maxclients": "[parameters('RedisCache').MaxClients]",
+                    "maxmemory-reserved": "[parameters('RedisCache').MaxMemoryRes]",
+                    "maxmemory-delta": "[parameters('RedisCache').MaxMemoryDelta]"
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}
