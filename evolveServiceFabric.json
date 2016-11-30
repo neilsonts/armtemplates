@@ -30,6 +30,12 @@
 		},
 		"sourceVaultValue": {
 			"type": "string"
+		},
+		"adminUserName": {
+			"type": "string"
+		},
+		"adminPassword": {
+			"type": "string"
 		}
 	},
     
@@ -42,7 +48,9 @@
 		  "VnetName": "[parameters('vnetName')]",
 		  "Network": "[parameters('Network')]",
 		  "certificateUrlValue": "[parameters('certificateUrlValue')]",
-		  "sourceVaultValue": "[parameters('sourceVaultValue')]"
+		  "sourceVaultValue": "[parameters('sourceVaultValue')]",
+		  "adminUserName": "[parameters('adminUserName')]",
+		  "adminPassword": "[parameters('adminPassword')]"
 		}
 	},
     
