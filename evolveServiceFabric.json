@@ -36,6 +36,9 @@
 		},
 		"adminPassword": {
 			"type": "string"
+		},
+		"certificateThumbprint": {
+			"type": "string"
 		}
 	},
     
@@ -50,7 +53,8 @@
 		  "certificateUrlValue": "[parameters('certificateUrlValue')]",
 		  "sourceVaultValue": "[parameters('sourceVaultValue')]",
 		  "adminUserName": "[parameters('adminUserName')]",
-		  "adminPassword": "[parameters('adminPassword')]"
+		  "adminPassword": "[parameters('adminPassword')]",
+		  "certificateThumbprint": "[parameters('certificateThumbprint')]"
 		}
 	},
     

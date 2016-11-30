@@ -159,7 +159,7 @@
         },
         "certificateThumbprint": {
             "type": "string",
-			"defaultValue": "1da9bf21deabe62814492245ba8be99843affc89",
+			"defaultValue": "[parameters('ASFCluster').certificateThumbprint]",
             "metadata": {
                 "description": "Certificate Thumbprint"
             }
