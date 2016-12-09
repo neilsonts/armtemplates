@@ -19,10 +19,16 @@
 		"CallRecordingStorageAccount": {
 		  "type": "string"
 		},
+		"callRecordingServiceBus": {
+		  "type": "string"
+		},
 		"telephonyMediaStorageAccount": {
 		  "type": "string"
 		},
-		"serviceBus": {
+		"telephonyServiceBus": {
+		  "type": "string"
+		},
+		"telephonyCache": {
 		  "type": "string"
 		}
 	},
@@ -36,6 +42,15 @@
 		  "Name": "[parameters('CallRecordingStorageAccount')]",
 		  "Type": "Standard_LRS"
 		},
+		"callRecordingServiceBus": {
+		  "subscriptionID": "[parameters('subscriptionID')]",
+		  "ResourceGroupName": "[parameters('ResourceGroupName')]",
+		  "Location": "[parameters('ResourceGroupLocation')]",
+		  "Name": "[parameters('callRecordingServiceBus')]",
+		  "kind": "Messaging",
+		  "skuName": "Standard",
+		  "skuTier": "Standard"
+		},
 		"telephonyMediaStorageAccount": {
 		  "subscriptionID": "[parameters('subscriptionID')]",
 		  "ResourceGroupName": "[parameters('ResourceGroupName')]",
@@ -44,14 +59,26 @@
 		  "Name": "[parameters('telephonyMediaStorageAccount')]",
 		  "Type": "Standard_LRS"
 		},
-		"ServiceBus": {
+		"telephonyServiceBus": {
 		  "subscriptionID": "[parameters('subscriptionID')]",
 		  "ResourceGroupName": "[parameters('ResourceGroupName')]",
 		  "Location": "[parameters('ResourceGroupLocation')]",
-		  "Name": "[parameters('ServiceBus')]",
+		  "Name": "[parameters('telephonyServiceBus')]",
 		  "kind": "Messaging",
 		  "skuName": "Standard",
 		  "skuTier": "Standard"
+		},
+		"telephonyCache": {
+		  "subscriptionID": "[parameters('subscriptionID')]",
+		  "ResourceGroupName": "[parameters('ResourceGroupName')]",
+		  "Location": "[parameters('ResourceGroupLocation')]",
+		  "Name": "[parameters('telephonyCache')]",
+		  "SKUName": "Standard",
+		  "SKUFamily": "C",
+		  "SKUCapacity": "1",
+		  "MaxClients": "1000",
+		  "MaxMemoryRes": "50",
+		  "MaxMemoryDelta": "50"
 		}
 	},
     
@@ -75,6 +102,24 @@
 		  }
 		},
 		{
+		  "name": "callRecordingServiceBus",
+		  "type": "Microsoft.Resources/deployments",
+		  "apiVersion": "2015-01-01",
+		  "dependsOn": [ ],
+		  "properties": {
+			"mode": "Incremental",
+			"templateLink": {
+			  "uri": "[concat(parameters('artifactsLocation'), '/resourceTemplates/ServiceBus.json')]",
+			  "contentVersion": "1.0.0.0"
+			},
+			"parameters": {
+			  "serviceBus": {
+				"value": "[variables('callRecordingServiceBus')]"
+			  }
+			}
+		  }
+		},
+		{
 		  "name": "telephonyMediaStorageAccount",
 		  "type": "Microsoft.Resources/deployments",
 		  "apiVersion": "2015-01-01",
@@ -93,7 +138,7 @@
 		  }
 		},
 		{
-		  "name": "serviceBus",
+		  "name": "telephonyServiceBus",
 		  "type": "Microsoft.Resources/deployments",
 		  "apiVersion": "2015-01-01",
 		  "dependsOn": [ ],
@@ -105,7 +150,25 @@
 			},
 			"parameters": {
 			  "serviceBus": {
-				"value": "[variables('serviceBus')]"
+				"value": "[variables('telephonyServiceBus')]"
+			  }
+			}
+		  }
+		},
+		{
+		  "name": "telephonyCache",
+		  "type": "Microsoft.Resources/deployments",
+		  "apiVersion": "2015-01-01",
+		  "dependsOn": [ ],
+		  "properties": {
+			"mode": "Incremental",
+			"templateLink": {
+			  "uri": "[concat(parameters('artifactsLocation'), '/resourceTemplates/RedisCache.json')]",
+			  "contentVersion": "1.0.0.0"
+			},
+			"parameters": {
+			  "RedisCache": {
+				"value": "[variables('telephonyCache')]"
 			  }
 			}
 		  }
