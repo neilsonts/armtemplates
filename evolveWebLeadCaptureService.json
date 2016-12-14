@@ -19,7 +19,7 @@
 		"webLeadStorageAccount": {
 		  "type": "string"
 		},
-		"redisCache": {
+		"webLeadCache": {
 		  "type": "string"
 		}
 	},
@@ -33,11 +33,11 @@
 		  "Name": "[parameters('webLeadStorageAccount')]",
 		  "Type": "Standard_LRS"
 		},
-		"redisCache": {
+		"webLeadCache": {
 		  "subscriptionID": "[parameters('subscriptionID')]",
 		  "ResourceGroupName": "[parameters('ResourceGroupName')]",
 		  "Location": "[parameters('ResourceGroupLocation')]",
-		  "Name": "[parameters('redisCache')]",
+		  "Name": "[parameters('webLeadCache')]",
 		  "SKUName": "Standard",
 		  "SKUFamily": "C",
 		  "SKUCapacity": "1",
@@ -67,7 +67,7 @@
 		  }
 		},
 		{
-		  "name": "redisCache",
+		  "name": "webLeadCache",
 		  "type": "Microsoft.Resources/deployments",
 		  "apiVersion": "2015-01-01",
 		  "dependsOn": [ ],
@@ -79,7 +79,7 @@
 			},
 			"parameters": {
 			  "RedisCache": {
-				"value": "[variables('redisCache')]"
+				"value": "[variables('webLeadCache')]"
 			  }
 			}
 		  }
