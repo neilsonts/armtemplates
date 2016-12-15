@@ -25,6 +25,9 @@
 		"Network": {
 			"type": "string"
 		},
+		"gatewayNetwork": {
+			"type": "string"
+		},
 		"certificateUrlValue": {
 			"type": "string"
 		},
@@ -50,6 +53,7 @@
 		  "ClusterName": "[parameters('asfClusterName')]",
 		  "VnetName": "[parameters('vnetName')]",
 		  "Network": "[parameters('Network')]",
+		  "gatewayNetwork": "[parameters('gatewayNetwork')]",
 		  "certificateUrlValue": "[parameters('certificateUrlValue')]",
 		  "sourceVaultValue": "[parameters('sourceVaultValue')]",
 		  "adminUserName": "[parameters('adminUserName')]",

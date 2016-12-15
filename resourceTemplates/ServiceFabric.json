@@ -60,6 +60,20 @@
                 "description": "the subnet network in CIDR notation"
             }
         },
+        "subnet2Name": {
+            "type": "string",
+			"defaultValue": "GatewaySubnet",
+			"metadata": {
+                "description": "Name of the gateway subnet"
+            }
+        },
+        "subnet2Prefix": {
+            "type": "string",
+			"defaultValue": "[concat(parameters('ASFCluster').gatewayNetwork,'/27')]",
+			"metadata": {
+                "description": "the gateway subnet network in CIDR notation"
+            }
+        },
         "computeLocation": {
             "type": "string",
 			"defaultValue": "[parameters('ASFCluster').clusterLocation]"
@@ -292,6 +306,12 @@
                         "name": "[parameters('subnet1Name')]",
                         "properties": {
                             "addressPrefix": "[parameters('subnet1Prefix')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet2Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet2Prefix')]"
                         }
                     }
                 ]
@@ -612,7 +632,7 @@
                     "x509StoreName": "[parameters('certificateStoreValue')]"
                 },
                 "clientCertificateCommonNames": [],
-                "clientCertificateThumbprints": [],
+                "clientCertificateThumbprints": "[parameters('certificateThumbprint')]",
                 "clusterState": "Default",
                 "diagnosticsStorageAccountConfig": {
                     "blobEndpoint": "[reference(concat('Microsoft.Storage/storageAccounts/', parameters('supportLogStorageAccountName')), variables('storageApiVersion')).primaryEndpoints.blob]",
