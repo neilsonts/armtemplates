@@ -632,7 +632,7 @@
                     "x509StoreName": "[parameters('certificateStoreValue')]"
                 },
                 "clientCertificateCommonNames": [],
-                "clientCertificateThumbprints": "[parameters('certificateThumbprint')]",
+                "clientCertificateThumbprints": [],
                 "clusterState": "Default",
                 "diagnosticsStorageAccountConfig": {
                     "blobEndpoint": "[reference(concat('Microsoft.Storage/storageAccounts/', parameters('supportLogStorageAccountName')), variables('storageApiVersion')).primaryEndpoints.blob]",
