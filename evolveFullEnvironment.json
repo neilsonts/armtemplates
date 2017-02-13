@@ -52,6 +52,9 @@
 		"telephonyMediaStorageAccount": {
 		  "type": "string"
 		},
+		"callerInfoStorageAccount": {
+		  "type": "string"
+		},
 		"telephonyServiceBus": {
 		  "type": "string"
 		},
@@ -200,6 +203,23 @@
 			"parameters": {
 			  "StorageAccount": {
 				"value": "[variables('telephonyMediaStorageAccount')]"
+			  }
+			}
+		  }
+		},
+		  "name": "callerInfoStorageAccount",
+		  "type": "Microsoft.Resources/deployments",
+		  "apiVersion": "2015-01-01",
+		  "dependsOn": [ ],
+		  "properties": {
+			"mode": "Incremental",
+			"templateLink": {
+			  "uri": "[concat(parameters('artifactsLocation'), '/resourceTemplates/StorageAccount.json')]",
+			  "contentVersion": "1.0.0.0"
+			},
+			"parameters": {
+			  "StorageAccount": {
+				"value": "[variables('callerInfoStorageAccount')]"
 			  }
 			}
 		  }
